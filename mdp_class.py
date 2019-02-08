@@ -8,10 +8,10 @@ import pandas as pd
 
 
 class MDP():
-    def __init__(self,nstates,nactions,Rsas, Tsas,terminal_states, start_state = 0):
+    def __init__(self,nstates,nactions,Rsa, Tsas,terminal_states, start_state = 0):
         self.nstates = nstates
         self.nactions = nactions
-        self.Rsas = Rsas;
+        self.Rsa = Rsa;
         self.Tsas = Tsas
         self.terminal_states = terminal_states
         self.start_state = start_state
@@ -28,7 +28,7 @@ class MDP():
         done = False
         s = self.state
         s_prime = nr.choice(np.arange(self.nstates),p=self.Tsas[s,action,:])
-        r = self.Rsas[s,action,s_prime]
+        r = self.Rsa[s,action]
         if np.isin(s_prime,self.terminal_states):
             done = True
         
