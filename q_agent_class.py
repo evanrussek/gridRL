@@ -5,8 +5,9 @@ import scipy.misc
 import matplotlib.pyplot as plt
 
 
+# adjust this to handle grid world stuff // should it just be adjusted in general or a new one?
 class Qagent():
-    def __init__(self,params,n_states, n_actions, available_actions, Tsas = [], Rsa = []):
+    def __init__(self,params,n_states, n_actions, available_actions, Tsas = [], Rsa = [], grid = False):
         n_actions_max = np.max(n_actions)
         n_state_actions = np.sum(n_actions)
         
