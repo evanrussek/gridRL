@@ -18,15 +18,13 @@ from grid_world_new import grid_world
 
 # adjust this to handle grid world stuff // should it just be adjusted in general or a new one?
 class Qagent():
-    def __init__(self,params,n_states, n_actions = [], Tsas = [], Rsa = [], grid = False, wall_mtx = []):
+    def __init__(self,params,n_states, n_actions = [], Tsas = [], Rsa = [], grid = False):
 
         self.params = params
         self.n_states = n_states
-        self.grid = grid
         
         if grid:
             n_actions = np.tile(4,n_states).astype(int)
-            self.wall_mtx = wall_mtx
         
         self.n_actions = n_actions # n actions in each state, a list
         
@@ -201,7 +199,7 @@ class Qagent():
             Rsa = self.Rsa
         if len(Tsas) == 0:
             Tsas = self.Tsas
-        
+            
         pre_Q_hat = Q_hat.copy()
         post_Q_hat_store = np.zeros([self.n_state_actions, self.n_states, self.n_actions_max])
         pre_policy = self.comp_pi(Q_hat=pre_Q_hat)
@@ -213,24 +211,88 @@ class Qagent():
         for bu_idx in np.arange(len(self.sa_list)):
             sa_list = self.sa_list
             (s,a) = sa_list[bu_idx]
-            if (self.grid == False) | (self.wall_mtx[np.unravel_index(s,self.wall_mtx.shape)] == 0):
-                post_Q_hat_ss = self.backup_Q(s,a, Q_hat = pre_Q_hat, reset = False)
-                post_Q_hat_store[bu_idx, :, :] = post_Q_hat_ss
-                post_policy = self.comp_pi(Q_hat = post_Q_hat_ss)
-                post_policy_store[bu_idx, :, :] = post_policy
-
-                if which_Q_new == 'full':
-                   # import pdb; pdb.set_trace() 
-                    post_Q_hat_full = self.evaluate_policy(post_policy, type = 'Q')
-                    gain = np.dot((post_policy[s,:] - pre_policy[s,:]),post_Q_hat_full[s,:])
-                else:
-                    post_Q_hat_full = self.evaluate_policy(post_policy, type = 'Q')
-                    gain = np.dot((post_policy[s,:] - pre_policy[s,:]),post_Q_hat_ss[s,:])
-                
-               # if (s == 17) and (a == 1):
-               #     breakpoint()
-                    
-                gain_store_flat[bu_idx] = gain
-                gain_store[s,a] = gain
+            post_Q_hat = self.backup_Q(s,a, Q_hat = pre_Q_hat, reset = False)
+            post_Q_hat_store[bu_idx, :, :] = post_Q_hat
+            post_policy = self.comp_pi(Q_hat = post_Q_hat)
+            post_policy_store[bu_idx, :, :] = post_policy
+            
+            if which_Q_new == 'full':
+               # import pdb; pdb.set_trace() 
+                post_Q_hat = self.evaluate_policy(post_policy, type = 'Q')
+            
+            #import pdb; pdb.set_trace() 
+            gain = np.dot((post_policy[s,:] - pre_policy[s,:]),post_Q_hat[s,:])
+            gain_store_flat[bu_idx] = gain
+            gain_store[s,a] = gain
         
         return gain_store
+    
+
+    
+walls = np.array([[0,0,0,0,0,0,0,1,0],
+                 [0,0,1,0,0,0,0,1,0],
+                 [0,0,1,0,0,0,0,1,0],
+                 [0,0,1,0,0,0,0,1,0],
+                 [0,0,0,0,0,1,0,0,0],
+                 [0,0,0,0,0,0,0,0,0],
+                ])
+
+walls = np.array([[0,0,0,0,0,0,0,0,0],
+                 [0,0,0,0,0,0,0,0,0],
+                 [0,0,0,0,0,0,0,0,0],
+                 [0,0,0,0,0,0,0,0,0],
+                 [0,0,0,0,0,0,0,0,0],
+                 [0,0,0,0,0,0,0,0,0],
+                ])
+
+
+rewards = np.array(
+                [[0,0,0,0,0,0,0,0,-500],
+                 [0,0,0,0,0,0,0,0,0],
+                 [0,0,0,0,0,0,0,0,0],
+                 [0,0,0,0,0,0,0,0,0],
+                 [0,0,0,0,0,0,0,0,0],
+                 [0,0,0,0,0,0,0,0,0],
+                ])
+
+# define the grid world
+start_state = np.array([2,0])
+transition_noise = .6
+gw = grid_world(rewards, walls, start_state, transition_noise)
+
+# define Tsas and Rsa for the Qagent
+Tsas = gw.make_Tsas()
+Rsa = gw.Rsa
+
+# make a Q agent starting with these
+params = {'beta': 5, 'alpha_q': 1, 'gamma': .9}
+n_states = int(np.size(walls))
+
+qag = Qagent(params, n_states, Tsas = Tsas, Rsa = Rsa, grid = True)
+
+#print('\n\n', qag.Q_hat)
+
+for j in range(4):
+    qag.backup_Q(8,j,reset = True)
+
+#print('\n\n', qag.Q_hat)
+gain = qag.comp_gain()
+
+
+#for i in range(1):
+#    # get max backup
+#    (s,a) = np.unravel_index(np.argmax(gain, axis=None), gain.shape)
+#    # apply backup
+#    qag.backup_Q(s,a,reset=True)#
+
+    # compute gain and state values
+#    gain = qag.comp_gain()
+#    winner = np.nonzero(gain == np.amax(gain))
+#    new_gain = np.zeros(gain.shape)
+#    new_gain[winner] = 1
+#    V = np.max(qag.Q_hat,axis = 1)
+    
+  
+
+
+

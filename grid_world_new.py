@@ -60,11 +60,11 @@ class grid_world():
         
         if direction == 0 and new_y > 0: # up
             new_y -= 1
-        if direction == 1 and new_y < self.n_rows-1:
+        if direction == 1 and new_y < self.n_rows-1: # down
             new_y += 1
-        if direction == 2 and new_x > 0:
+        if direction == 2 and new_x > 0: # left
             new_x -= 1
-        if direction == 3 and new_x < self.n_cols-1:
+        if direction == 3 and new_x < self.n_cols-1: # right
             new_x += 1  
     
     
@@ -90,7 +90,8 @@ class grid_world():
             for a in np.arange(4):
                 s_prime = int(self.lookaheadmtx[s,a])
                 T_sas[s,a,s_prime] = 1 - self.transition_noise
-                T_sas[s,a,self.lookaheadmtx[s,:].astype(int)] = T_sas[s,a,self.lookaheadmtx[s,:].astype(int)] + self.transition_noise/4
+                for sp in np.arange(4):
+                    T_sas[s,a,self.lookaheadmtx[s,sp].astype(int)] = T_sas[s,a,self.lookaheadmtx[s,sp].astype(int)] + self.transition_noise/4
                 
         # deal with terminal states a bit, or states with rewards - these take you back to start state...
         T_sas[self.Rs != 0, :, :] = 0
@@ -159,7 +160,7 @@ class grid_world():
     def render_vec(self,vec,ax):
         r_map = np.reshape(vec,[self.n_rows, self.n_cols])
         r_map[self.wall_mtx == 1] = 0
-        ax.imshow(r_map,interpolation='none', vmin=np.min(r_map), vmax=np.max(r_map), aspect='equal')
+        ax.imshow(r_map,interpolation='none', cmap = 'Greys', vmin=np.min(r_map), vmax=np.max(r_map), aspect='equal')
         
     def render_sa_mtx(self,sa_mtx,ax, over_im = False):
         # plot function over actions as colored quiver arrows
@@ -183,7 +184,7 @@ class grid_world():
             if over_im:
                 ax.quiver(X,Y,X_mtx[:,:,i],Y_mtx[:,:,i],dir_map, cmap = 'Reds',width=.005,linewidth=.005, scale_units = 'dots', scale = .07)
             else:
-                ax.quiver(X,np.flipud(Y),X_mtx[:,:,i],Y_mtx[:,:,i],dir_map, cmap = 'Reds',width=.005,linewidth=.005, scale_units = 'dots', scale = .07)
+                ax.quiver(X,np.flipud(Y),X_mtx[:,:,i],Y_mtx[:,:,i],dir_map, cmap = 'inferno',width=.005,linewidth=.005, scale_units = 'dots', scale = .07)
 
         ax.set_xticks(np.arange(-.5, self.n_cols, 1), minor=True);
         ax.set_yticks(np.arange(-.5, self.n_rows, 1), minor=True);
