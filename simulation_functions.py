@@ -1,0 +1,26 @@
+def sim_episode(env, choice_vec, max_step, visualize = False):
+
+    d = False
+    j = 0
+    S = env.reset(env.start_state)
+
+    while j < max_step:
+            
+        # increase counter
+        j += 1
+        
+        # sample action given by pi for state S
+        a = choice_vec[j-1]
+        
+        # take action A, observe s1, r, terminal?
+        S_prime,r,nchoices,d = env.step(a)
+        
+        print(S,a,r,S_prime)
+
+        # update S
+        S = S_prime;
+            
+        if d == True:
+            break
+            
+    return j

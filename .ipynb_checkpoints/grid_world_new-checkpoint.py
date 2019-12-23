@@ -94,8 +94,8 @@ class grid_world():
                     T_sas[s,a,self.lookaheadmtx[s,sp].astype(int)] = T_sas[s,a,self.lookaheadmtx[s,sp].astype(int)] + self.transition_noise/4
                 
         # deal with terminal states a bit, or states with rewards - these take you back to start state...
-        T_sas[self.Rs != 0, :, :] = 0
-        T_sas[self.Rs != 0, :, self.start_state] = 1
+        #T_sas[self.Rs != 0, :, :] = 0
+        #T_sas[self.Rs != 0, :, self.start_state] = 1
         
         return T_sas
     
@@ -159,7 +159,7 @@ class grid_world():
     
     def render_vec(self,vec,ax):
         r_map = np.reshape(vec,[self.n_rows, self.n_cols])
-        r_map[self.wall_mtx == 1] = 0
+        #r_map[self.wall_mtx == 1] = 0
         ax.imshow(r_map,interpolation='none', cmap = 'Greys', vmin=np.min(r_map), vmax=np.max(r_map), aspect='equal')
         
     def render_sa_mtx(self,sa_mtx,ax, over_im = False):
