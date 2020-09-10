@@ -138,17 +138,17 @@ class grid_world():
         # draw current state of environment - include rewards and agent
         a = np.zeros([self.n_rows, self.n_cols])
         #a[self.agent_y, self.agent_x] = -1
-        a[self.reward_mtx > 0] = 3
-        a[self.reward_mtx < 0] = -3
+        #a[self.reward_mtx > 0] = 3
+        #a[self.reward_mtx < 0] = -3
         a[self.wall_mtx == 1] = -2
-        a[self.agent_y, self.agent_x] = 1
+        #a[self.agent_y, self.agent_x] = 1
         
         ax.imshow(a,interpolation='none', vmin=np.min(a), vmax=np.max(a), aspect='equal')
         
-        for r in np.arange(self.n_rows):
-            for c in np.arange(self.n_cols):
-                if self.reward_mtx[r,c] != 0:
-                    text = ax.text(c,r,self.reward_mtx[r,c],ha="center", va="center", color="r"  )
+        #for r in np.arange(self.n_rows):
+        #    for c in np.arange(self.n_cols):
+        #        if self.reward_mtx[r,c] != 0:
+        #            text = ax.text(c,r,self.reward_mtx[r,c],ha="center", va="center", color="r"  )
                     
 
         ax.imshow(a,interpolation='none', vmin=np.min(a), vmax=np.max(a), aspect='equal')
@@ -160,7 +160,7 @@ class grid_world():
     def render_vec(self,vec,ax):
         r_map = np.reshape(vec,[self.n_rows, self.n_cols])
         #r_map[self.wall_mtx == 1] = 0
-        ax.imshow(r_map,interpolation='none', cmap = 'Greys', vmin=np.min(r_map), vmax=np.max(r_map), aspect='equal')
+        ax.imshow(r_map,interpolation='none', cmap = 'Greys_r', vmin=np.min(r_map), vmax=np.max(r_map), aspect='equal')
         
     def render_sa_mtx(self,sa_mtx,ax, over_im = False):
         # plot function over actions as colored quiver arrows
@@ -182,7 +182,7 @@ class grid_world():
             dir_map =  np.reshape(dir_mtx,[self.n_rows, self.n_cols])
 
             if over_im:
-                ax.quiver(X,Y,X_mtx[:,:,i],Y_mtx[:,:,i],dir_map, cmap = 'Reds',width=.005,linewidth=.005, scale_units = 'dots', scale = .07)
+                ax.quiver(X,Y,X_mtx[:,:,i],Y_mtx[:,:,i],dir_map, cmap = 'Reds_r',width=.005,linewidth=.005, scale_units = 'dots', scale = .07)
             else:
                 ax.quiver(X,np.flipud(Y),X_mtx[:,:,i],Y_mtx[:,:,i],dir_map, cmap = 'inferno',width=.005,linewidth=.005, scale_units = 'dots', scale = .07)
 

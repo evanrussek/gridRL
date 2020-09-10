@@ -171,12 +171,9 @@ class Qagent():
         
     def comp_DR(self,Tss,pol_mtx,type = 'ss'):
         Rsa = self.Rsa
-                
         Rs = np.sum(np.array([Rsa[:,s]*pol_mtx[:,s] for s in np.arange(Rsa.shape[1])]),axis = 0)
-        
         DR = np.linalg.inv(np.diag(np.exp(-1*Rs)) - Tss)
         return DR
-        
         
     def evaluate_policy(self,pol_mtx, type = 'Q'):
         # uses SR to evaluate the policy
